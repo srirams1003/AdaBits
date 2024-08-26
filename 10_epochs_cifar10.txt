@@ -1,0 +1,318 @@
+/home/sriram/AdaBits
+GPU 0 has the largest free memory (11163MiB).
+seed for random sampling: 1995
+Experiment settings: bits_list_[5, 4, 3]/adaptive_True/weight_only_False/stats_sharing_False/fp_pretrained_False/clamp_True/rescale_True/rescale_conv_True/rescale_type_constant/switchbn_True/weight_modified_act_original/switch_alpha_True/pact_fp_False
+Files already downloaded and verified
+Files already downloaded and verified
+DataParallel(
+  (module): Model(
+    (head): Sequential(
+      (0): QConv2d(3, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+      (1): SwitchBN2d(
+        (bn): ModuleList(
+          (0-2): 3 x BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (2): ReLU(inplace=True)
+    )
+    (stage_0_layer_0): Block(
+      (body): Sequential(
+        (0): QConv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (2): ReLU(inplace=True)
+        (3): QConv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (4): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (post_relu): ReLU(inplace=True)
+    )
+    (stage_0_layer_1): Block(
+      (body): Sequential(
+        (0): QConv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (2): ReLU(inplace=True)
+        (3): QConv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (4): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (post_relu): ReLU(inplace=True)
+    )
+    (stage_0_layer_2): Block(
+      (body): Sequential(
+        (0): QConv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (2): ReLU(inplace=True)
+        (3): QConv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (4): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (post_relu): ReLU(inplace=True)
+    )
+    (stage_1_layer_0): Block(
+      (body): Sequential(
+        (0): QConv2d(16, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (2): ReLU(inplace=True)
+        (3): QConv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (4): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (shortcut): Sequential(
+        (0): QConv2d(16, 32, kernel_size=(1, 1), stride=(2, 2), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (post_relu): ReLU(inplace=True)
+    )
+    (stage_1_layer_1): Block(
+      (body): Sequential(
+        (0): QConv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (2): ReLU(inplace=True)
+        (3): QConv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (4): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (post_relu): ReLU(inplace=True)
+    )
+    (stage_1_layer_2): Block(
+      (body): Sequential(
+        (0): QConv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (2): ReLU(inplace=True)
+        (3): QConv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (4): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (post_relu): ReLU(inplace=True)
+    )
+    (stage_2_layer_0): Block(
+      (body): Sequential(
+        (0): QConv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (2): ReLU(inplace=True)
+        (3): QConv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (4): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (shortcut): Sequential(
+        (0): QConv2d(32, 64, kernel_size=(1, 1), stride=(2, 2), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (post_relu): ReLU(inplace=True)
+    )
+    (stage_2_layer_1): Block(
+      (body): Sequential(
+        (0): QConv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (2): ReLU(inplace=True)
+        (3): QConv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (4): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (post_relu): ReLU(inplace=True)
+    )
+    (stage_2_layer_2): Block(
+      (body): Sequential(
+        (0): QConv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (2): ReLU(inplace=True)
+        (3): QConv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (4): SwitchBN2d(
+          (bn): ModuleList(
+            (0-2): 3 x BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (post_relu): ReLU(inplace=True)
+    )
+    (avgpool): AdaptiveAvgPool2d(output_size=1)
+    (classifier): Sequential(
+      (0): QLinear(in_features=64, out_features=10, bias=True)
+    )
+  )
+)
+Start model profiling, use_cuda:True.
+Model profiling with 5 bits.
+Item                                                                                                    params           macs     bytes (MB)     bitops (B)    energy (mJ)   latency (ms)       nanosecs
+Total                                                                                                  270,906     40,817,280           0.17           1.08           0.00           0.00     27,090,967
+Model profiling with 4 bits.
+Item                                                                                                    params           macs     bytes (MB)     bitops (B)    energy (mJ)   latency (ms)       nanosecs
+Total                                                                                                  270,906     40,817,280           0.14           0.72           0.00           0.00     26,952,493
+Model profiling with 3 bits.
+Item                                                                                                    params           macs     bytes (MB)     bitops (B)    energy (mJ)   latency (ms)       nanosecs
+Total                                                                                                  270,906     40,817,280           0.10           0.44           0.00           0.00     26,876,722
+Start training.
+**************** train *****************
+93.4s	train	5 bits	1/10: loss: 2.504, top1_error: 0.887, top5_error: 0.475
+93.4s	train	4 bits	1/10: loss: 2.513, top1_error: 0.893, top5_error: 0.486
+93.5s	train	3 bits	1/10: loss: 2.831, top1_error: 0.895, top5_error: 0.488
+func:'run_one_epoch' took: 93.4577 sec
+~~~~~~~~~~~~~~ validation ~~~~~~~~~~~~~~
+8.0s	val	5 bits	1/10: loss: 2.361, top1_error: 0.908, top5_error: 0.451
+8.0s	val	4 bits	1/10: loss: 2.416, top1_error: 0.911, top5_error: 0.475
+8.0s	val	3 bits	1/10: loss: 2.38, top1_error: 0.9, top5_error: 0.496
+func:'run_one_epoch' took: 8.0116 sec
+New best validation top1 error: 0.906
+**************** train *****************
+93.4s	train	5 bits	2/10: loss: 2.277, top1_error: 0.876, top5_error: 0.449
+93.4s	train	4 bits	2/10: loss: 2.293, top1_error: 0.883, top5_error: 0.46
+93.4s	train	3 bits	2/10: loss: 2.296, top1_error: 0.89, top5_error: 0.469
+func:'run_one_epoch' took: 93.4478 sec
+~~~~~~~~~~~~~~ validation ~~~~~~~~~~~~~~
+8.2s	val	5 bits	2/10: loss: 2.398, top1_error: 0.895, top5_error: 0.441
+8.2s	val	4 bits	2/10: loss: 2.388, top1_error: 0.901, top5_error: 0.447
+8.2s	val	3 bits	2/10: loss: 2.324, top1_error: 0.918, top5_error: 0.463
+func:'run_one_epoch' took: 8.1770 sec
+New best validation top1 error: 0.905
+**************** train *****************
+92.9s	train	5 bits	3/10: loss: 2.267, top1_error: 0.871, top5_error: 0.44
+92.9s	train	4 bits	3/10: loss: 2.281, top1_error: 0.877, top5_error: 0.452
+92.9s	train	3 bits	3/10: loss: 2.291, top1_error: 0.882, top5_error: 0.465
+func:'run_one_epoch' took: 92.9310 sec
+~~~~~~~~~~~~~~ validation ~~~~~~~~~~~~~~
+8.5s	val	5 bits	3/10: loss: 2.367, top1_error: 0.855, top5_error: 0.442
+8.5s	val	4 bits	3/10: loss: 2.449, top1_error: 0.877, top5_error: 0.454
+8.5s	val	3 bits	3/10: loss: 2.45, top1_error: 0.9, top5_error: 0.489
+func:'run_one_epoch' took: 8.5116 sec
+New best validation top1 error: 0.877
+**************** train *****************
+93.7s	train	5 bits	4/10: loss: 2.26, top1_error: 0.868, top5_error: 0.436
+93.8s	train	4 bits	4/10: loss: 2.272, top1_error: 0.874, top5_error: 0.444
+93.8s	train	3 bits	4/10: loss: 2.286, top1_error: 0.879, top5_error: 0.457
+func:'run_one_epoch' took: 93.7698 sec
+~~~~~~~~~~~~~~ validation ~~~~~~~~~~~~~~
+7.9s	val	5 bits	4/10: loss: 2.377, top1_error: 0.882, top5_error: 0.431
+7.9s	val	4 bits	4/10: loss: 2.387, top1_error: 0.878, top5_error: 0.417
+7.9s	val	3 bits	4/10: loss: 2.357, top1_error: 0.892, top5_error: 0.448
+func:'run_one_epoch' took: 7.9026 sec
+**************** train *****************
+93.9s	train	5 bits	5/10: loss: 2.256, top1_error: 0.866, top5_error: 0.432
+93.9s	train	4 bits	5/10: loss: 2.265, top1_error: 0.871, top5_error: 0.44
+93.9s	train	3 bits	5/10: loss: 2.282, top1_error: 0.877, top5_error: 0.455
+func:'run_one_epoch' took: 93.8969 sec
+~~~~~~~~~~~~~~ validation ~~~~~~~~~~~~~~
+7.9s	val	5 bits	5/10: loss: 2.352, top1_error: 0.864, top5_error: 0.435
+7.9s	val	4 bits	5/10: loss: 2.365, top1_error: 0.877, top5_error: 0.433
+7.9s	val	3 bits	5/10: loss: 2.357, top1_error: 0.873, top5_error: 0.44
+func:'run_one_epoch' took: 7.9426 sec
+New best validation top1 error: 0.871
+**************** train *****************
+93.2s	train	5 bits	6/10: loss: 2.251, top1_error: 0.867, top5_error: 0.429
+93.2s	train	4 bits	6/10: loss: 2.263, top1_error: 0.868, top5_error: 0.438
+93.2s	train	3 bits	6/10: loss: 2.277, top1_error: 0.875, top5_error: 0.449
+func:'run_one_epoch' took: 93.2413 sec
+~~~~~~~~~~~~~~ validation ~~~~~~~~~~~~~~
+8.1s	val	5 bits	6/10: loss: 2.355, top1_error: 0.892, top5_error: 0.408
+8.1s	val	4 bits	6/10: loss: 2.355, top1_error: 0.895, top5_error: 0.413
+8.1s	val	3 bits	6/10: loss: 2.394, top1_error: 0.89, top5_error: 0.434
+func:'run_one_epoch' took: 8.0995 sec
+**************** train *****************
+93.5s	train	5 bits	7/10: loss: 2.244, top1_error: 0.861, top5_error: 0.418
+93.5s	train	4 bits	7/10: loss: 2.261, top1_error: 0.866, top5_error: 0.435
+93.5s	train	3 bits	7/10: loss: 2.274, top1_error: 0.872, top5_error: 0.446
+func:'run_one_epoch' took: 93.5213 sec
+~~~~~~~~~~~~~~ validation ~~~~~~~~~~~~~~
+7.9s	val	5 bits	7/10: loss: 2.344, top1_error: 0.794, top5_error: 0.372
+7.9s	val	4 bits	7/10: loss: 2.365, top1_error: 0.798, top5_error: 0.451
+7.9s	val	3 bits	7/10: loss: 2.331, top1_error: 0.852, top5_error: 0.454
+func:'run_one_epoch' took: 7.9173 sec
+New best validation top1 error: 0.815
+**************** train *****************
+93.4s	train	5 bits	8/10: loss: 2.234, top1_error: 0.845, top5_error: 0.409
+93.4s	train	4 bits	8/10: loss: 2.254, top1_error: 0.857, top5_error: 0.426
+93.4s	train	3 bits	8/10: loss: 2.264, top1_error: 0.868, top5_error: 0.428
+func:'run_one_epoch' took: 93.4476 sec
+~~~~~~~~~~~~~~ validation ~~~~~~~~~~~~~~
+8.0s	val	5 bits	8/10: loss: 2.344, top1_error: 0.831, top5_error: 0.434
+8.0s	val	4 bits	8/10: loss: 2.372, top1_error: 0.827, top5_error: 0.427
+8.0s	val	3 bits	8/10: loss: 2.317, top1_error: 0.87, top5_error: 0.429
+func:'run_one_epoch' took: 7.9589 sec
+**************** train *****************
+93.2s	train	5 bits	9/10: loss: 2.224, top1_error: 0.842, top5_error: 0.402
+93.2s	train	4 bits	9/10: loss: 2.245, top1_error: 0.852, top5_error: 0.417
+93.2s	train	3 bits	9/10: loss: 2.259, top1_error: 0.863, top5_error: 0.421
+func:'run_one_epoch' took: 93.2088 sec
+~~~~~~~~~~~~~~ validation ~~~~~~~~~~~~~~
+7.9s	val	5 bits	9/10: loss: 2.334, top1_error: 0.832, top5_error: 0.401
+7.9s	val	4 bits	9/10: loss: 2.738, top1_error: 0.857, top5_error: 0.418
+7.9s	val	3 bits	9/10: loss: 2.319, top1_error: 0.853, top5_error: 0.44
+func:'run_one_epoch' took: 7.9432 sec
+Start model profiling, use_cuda:True.
+Model profiling with 5 bits.
+Item                                                                                                    params           macs     bytes (MB)     bitops (B)    energy (mJ)   latency (ms)       nanosecs
+Total                                                                                                  270,906     40,817,280           0.17           1.08           0.00           0.00     26,915,612
+Model profiling with 4 bits.
+Item                                                                                                    params           macs     bytes (MB)     bitops (B)    energy (mJ)   latency (ms)       nanosecs
+Total                                                                                                  270,906     40,817,280           0.14           0.72           0.00           0.00     26,873,957
+Model profiling with 3 bits.
+Item                                                                                                    params           macs     bytes (MB)     bitops (B)    energy (mJ)   latency (ms)       nanosecs
+Total                                                                                                  270,906     40,817,280           0.10           0.44           0.00           0.00     26,841,342
+func:'train_val_test' took: 917.4587 sec

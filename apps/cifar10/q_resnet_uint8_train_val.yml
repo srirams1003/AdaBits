@@ -9,14 +9,15 @@ gpu_type: "nvidia-tesla-p100"
 dataset: CIFAR10
 data_transforms: cifar
 data_loader: cifar
-dataset_dir: /path/to/data
+dataset_dir: /home/sriram/cifar10_dataset
 data_loader_workers: 5 #10
 
 # info
 num_classes: 10
 image_size: 32
 topk: [1, 5]
-num_epochs: 200 #150
+# num_epochs: 200 #150
+num_epochs: 10
 
 # optimizer
 optimizer: sgd
