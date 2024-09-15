@@ -2,7 +2,7 @@
 # data
 # exp
 # logs
-# results
+results
 # .flake8
 # *.bak
 # *.pyc

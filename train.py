@@ -53,6 +53,7 @@ def timing(f):
 
 def get_model():
     """get model"""
+    print("\n\nPrinting FLAGS.model from the get_model() function: {}\n\n".format(FLAGS.model))
     model_lib = importlib.import_module(FLAGS.model)
     model = model_lib.Model(FLAGS.num_classes)
     if getattr(FLAGS, 'distributed', False):
@@ -315,7 +316,9 @@ def lr_func(x, fun='cos'):
 
 def get_lr_scheduler(optimizer, nBatch=None):
     """get learning rate"""
+    print("\n\n This is our lr_scheduler: {}\n\n".format(FLAGS.lr_scheduler))
     if FLAGS.lr_scheduler == 'multistep':
+        print("\n\n Confirming that it comes into `multistep` \n\n")
         lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
             optimizer, milestones=FLAGS.multistep_lr_milestones,
             gamma=FLAGS.multistep_lr_gamma)
@@ -397,6 +400,7 @@ def get_lr_scheduler(optimizer, nBatch=None):
 def get_optimizer(model):
     """get optimizer"""
     if FLAGS.optimizer == 'sgd':
+        print("\nOur optimizer is sgd\n")
         # all depthwise convolution (N, 1, x, x) has no weight decay
         # weight decay only on normal conv and fc
         model_params = []
@@ -414,8 +418,10 @@ def get_optimizer(model):
             model_params.append(item)
         optimizer = torch.optim.SGD(model_params)
     elif FLAGS.optimizer == 'rmsprop':
+        print("\nOur optimizer is rmsprop\n")
         optimizer = torch.optim.RMSprop(model.parameters(), lr=FLAGS.lr, alpha=FLAGS.optim_decay, eps=FLAGS.optim_eps, weight_decay=FLAGS.weight_decay, momentum=FLAGS.momentum)
     else:
+        print("\nOur optimizer is something else\n")
         try:
             optimizer_lib = importlib.import_module(FLAGS.optimizer)
             return optimizer_lib.get_optimizer(model)
@@ -448,14 +454,20 @@ def get_meters(phase, single_sample=False):
                 '{}_top{}_error/{}'.format(phase, k, suffix))
         return meters
 
+    print("\n\nGoes in get_meters() part 1\n\n")
     assert phase in ['train', 'val', 'test'], 'Invalid phase.'
+    print("\n\nGoes in get_meters() part 2\n\n")
     if single_sample:
+        print("\n\nGoes in if block because yes single_sample!\n\n")
         meters = get_single_meter(phase)
     elif getattr(FLAGS, 'adaptive_training', False):
+        # this is where our cifar 10 flow leads us because we use a bits_list [5,4,3] and thus, we need multiple meters
+        print("\n\nGoes in adaptive training elif block for bits_list multiple meters\n\n")
         meters = {}
         for bits in FLAGS.bits_list:
             meters[str(bits)] = get_single_meter(phase, str(bits))
     else:
+        print("\n\nGoes in else block because not single_sample?\n\n")
         meters = get_single_meter(phase)
     if phase == 'val':
         meters['best_val'] = ScalarMeter('best_val')
@@ -505,12 +517,21 @@ def get_experiment_setting():
 def forward_loss(model, criterion, input, target, meter):
     """forward model and return loss"""
     if getattr(FLAGS, 'normalize', False):
+        print("\n\SHOULD NOT COME IN HERE CUZ WE NORMALIZE FOR OUR CIFAR-10\n\n")
         input = input #(128 * input).round_().clamp_(-128, 127)
     else:
+        # print("\n\ncomes in here cuz we do normalize for our cifar-10\n\n")
         input = (255 * input).round_()
+
+    # the model processes the input and generates an output (predictions)
     output = model(input)
-    loss = torch.mean(criterion(output, target))
+
+    # the loss is calculated by applying the provided `criterion` (loss function) on the model's output and the target labels, then taking the mean
+    loss = torch.mean(criterion(output, target)) # our criterion for cifar-10 is cross entropy loss as it is good for classification problems
+
     # topk
+    # computes the top-k predictions (e.g., top-1, top-5) and compares them with the actual target
+    # correct predictions for each top-k are summed
     _, pred = output.topk(max(FLAGS.topk))
     pred = pred.t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
@@ -518,16 +539,25 @@ def forward_loss(model, criterion, input, target, meter):
     for k in FLAGS.topk:
         correct_k.append(correct[:k].float().sum(0))
     res = torch.cat([loss.view(1)] + correct_k, dim=0)
+
+    # does not go inside this block
     if getattr(FLAGS, 'distributed', False) and getattr(FLAGS, 'distributed_all_reduce', False):
+        print("\n\SHOULD NOT COME IN HERE CUZ WE DO NOT use distributed for now\n\n")
         res = dist_all_reduce_tensor(res)
+
+    # the error rates for each top-k (e.g., top-1 error, top-5 error) and the loss are stored in corresponding meters, which track metrics during training or validation
     res = res.cpu().detach().numpy()
     bs = (res.size - 1) // len(FLAGS.topk)
     for i, k in enumerate(FLAGS.topk):
         error_list = list(1. - res[1+i*bs:1+(i+1)*bs])
         if meter is not None:
+            # print("\n\ncomes in here cuz meter is not None for our case of adaptive bit widths IN FOR LOOP\n\n")
             meter['top{}_error'.format(k)].cache_list(error_list)
     if meter is not None:
+        # print("\n\ncomes in here cuz meter is not None for our case of adaptive bit widths IN IF STATEMENT RIGHT BEFORE RETURN\n\n")
         meter['loss'].cache(res[0])
+    
+    # the computed loss is returned for further backpropagation
     return loss
 
 
@@ -550,7 +580,9 @@ def run_one_epoch(
     for batch_idx, (input, target) in enumerate(loader):
         target = target.cuda(non_blocking=True)
         if train:
-            if FLAGS.lr_scheduler == 'linear_decaying':
+            # print("\n\nComes into train if statement in for loop in run_one_epoch\n\n")
+            if FLAGS.lr_scheduler == 'linear_decaying': # does not go here cuz we use multistep for cifar-10
+                print("\n\nTHIS SHOULD NOT PRINT CUZ WE USE MULTISTEP INSTEAD\n\n")
                 linear_decaying_per_step = (
                     FLAGS.lr/FLAGS.num_epochs/len(loader.dataset)*FLAGS.batch_size)
                 for param_group in optimizer.param_groups:
@@ -558,8 +590,13 @@ def run_one_epoch(
             # For PyTorch 1.1+, comment the following two line
             #if FLAGS.lr_scheduler in ['exp_decaying_iter', 'gaussian_iter', 'cos_annealing_iter', 'butterworth_iter', 'mixed_iter', 'multistep_iter']:
             #    scheduler.step()
+
+            # resets gradients
             optimizer.zero_grad()
+
             if getattr(FLAGS, 'adaptive_training', False):
+                # print("\n\nComes into adaptive training if statement in for loop in run_one_epoch if train statement\n\n")
+                # loops over different precision bit-widths and applies them to the model
                 for bits_idx, bits in enumerate(FLAGS.bits_list):
                     model.apply(
                         lambda m: setattr(m, 'bits', bits))
@@ -567,21 +604,37 @@ def run_one_epoch(
                         meter = meters[str(bits)]
                     else:
                         meter = None
+
+                    # calculates loss
                     loss = forward_loss(
                         model, criterion, input, target, meter)
+
+                    # performs backpropagation
                     loss.backward()
             else:
+                # should not go here cuz we use multiple bits in the bits_list
+                print("\n\nTHIS SHOULD NOT PRINT CUZ WE USE multiple bits in bits_list INSTEAD train mode\n\n")
                 loss = forward_loss(
                     model, criterion, input, target, meters)
                 loss.backward()
-            if getattr(FLAGS, 'distributed', False) and getattr(FLAGS, 'distributed_all_reduce', False):
+
+            # should not go here cuz we do not use distributed settings for now
+            if getattr(FLAGS, 'distributed', False) and getattr(FLAGS, 'distributed_all_reduce', False): 
+                print("\n\nTHIS SHOULD NOT PRINT CUZ WE USE single machine INSTEAD of distributed training\n\n")
                 allreduce_grads(model)
+
+            # the optimizer is updated
             optimizer.step()
+
             # For PyTorch 1.0 or earlier, comment the following two lines
             if FLAGS.lr_scheduler in ['exp_decaying_iter', 'cos_annealing_iter', 'multistep_iter']:
+                print("\n\nTHIS SHOULD NOT PRINT CUZ WE USE multistep INSTEAD\n\n")
                 scheduler.step()
-        else: #not train
+        else: #not train (either val or test)
+            # It runs forward passes and computes loss/accuracy without updating the model (no backward pass)
+            # print("\n\nComes into either val or test else statement in for loop in run_one_epoch\n\n")
             if getattr(FLAGS, 'adaptive_training', False):
+                # print("\n\nComes into adaptive training if statement in for loop in run_one_epoch else not train statement\n\n")
                 for bits_idx, bits in enumerate(FLAGS.bits_list):
                     model.apply(
                         lambda m: setattr(m, 'bits', bits))
@@ -591,12 +644,17 @@ def run_one_epoch(
                         meter = None
                     forward_loss(
                         model, criterion, input, target, meter)
+                        # NOTE: only perform backpropagation during training, not during testing and validation (i.e., no more model updates)
             else:
+                print("\n\nTHIS SHOULD NOT PRINT CUZ WE USE multiple bits in bits_list INSTEAD val mode\n\n")
                 forward_loss(model, criterion, input, target, meters)
                 
     val_top1 = None
     if is_master() and meters is not None:
+        # print("\n\nComes into is_master() and meters is not None\n\n")
+        # collects and prints the loss/accuracy metrics for different bit-widths during adaptive training
         if getattr(FLAGS, 'adaptive_training', False):
+            # print("\n\nComes into adaptive_training if block  in is_master() and meters is not None\n\n")
             val_top1_list = []
             for bits in FLAGS.bits_list:
                 results = flush_scalar_meters(meters[str(bits)])
@@ -605,13 +663,17 @@ def run_one_epoch(
                     FLAGS.num_epochs) + ', '.join('{}: {}'.format(k, v)
                                                   for k, v in results.items()))
                 val_top1_list.append(results['top1_error'])
+
+            # computes the average top-1 error for validation (`val_top1`)
             val_top1 = np.mean(val_top1_list)
         else:
+            print("\n\nTHIS SHOULD NOT PRINT CUZ WE USE multiple bits in bits_list INSTEAD in is_master() and meters is not None\n\n")
             results = flush_scalar_meters(meters)
             mprint('{:.1f}s\t{}\t{}/{}: '.format(
                 time.time() - t_start, phase, epoch, FLAGS.num_epochs) +
                   ', '.join('{}: {}'.format(k, v) for k, v in results.items()))
             val_top1 = results['top1_error']
+
     return val_top1
 
 
@@ -640,6 +702,11 @@ def train_val_test():
 
     # model
     model, model_wrapper = get_model()
+    print("\n\nPrinting model, followed by model_wrapper")
+    print("The model is:", model)
+    print('\n')
+    print("The model_wrapper is:", model_wrapper)
+    print("\nDone printing model and model wrapper")
     criterion = torch.nn.CrossEntropyLoss(reduction='none').cuda()
     if getattr(FLAGS, 'profiling_only', False):
         if 'gpu' in FLAGS.profiling:
@@ -654,11 +721,19 @@ def train_val_test():
         train_transforms, val_transforms, test_transforms)
     train_loader, val_loader, test_loader = data_loader(
         train_set, val_set, test_set)
+    
+    print("\n\nPrinting data loaders and their datasets:\n")
+    print("train_loader:", train_loader, "\n train_loader.dataset:", train_loader.dataset, "\n\n")
+    print("val_loader:", val_loader, "\n val_loader.dataset:", val_loader.dataset, "\n\n")
+    print("test_loader:", test_loader, "\n test_loader.dataset:", test_loader.dataset, "\n\n")
+    print("\n\n Done printing data loaders and their datasets:\n")
+
 
     log_dir = FLAGS.log_dir
     log_dir = os.path.join(log_dir, experiment_setting)
 
     # full precision pretrained
+    # does not go into this code block below
     if getattr(FLAGS, 'fp_pretrained_file', None):
         checkpoint = torch.load(
             FLAGS.fp_pretrained_file, map_location=lambda storage, loc: storage)
@@ -697,6 +772,7 @@ def train_val_test():
         mprint('Loaded full precision model {}.'.format(FLAGS.fp_pretrained_file))
 
     # check pretrained
+    # does not go into this code block below
     if FLAGS.pretrained_file:
         pretrained_dir = FLAGS.pretrained_dir
         pretrained_dir = os.path.join(pretrained_dir, experiment_setting)
@@ -716,8 +792,13 @@ def train_val_test():
             checkpoint = new_checkpoint
         model_wrapper.load_state_dict(checkpoint)
         mprint('Loaded model {}.'.format(pretrained_file))
-    optimizer = get_optimizer(model_wrapper)
 
+    # gets optimizer using model_wrapper
+    optimizer = get_optimizer(model_wrapper)
+    # our optimizer for CIFAR-10 is SGD
+    # print("\n\noptimizer: ", optimizer, "\n\n") # prints 170 parameter groups 
+
+    # does not go into this code block either
     if FLAGS.test_only and (test_loader is not None):
         mprint('Start profiling.')
         if 'gpu' in FLAGS.profiling:
@@ -733,6 +814,7 @@ def train_val_test():
                 test_meters, phase='test')
         return
 
+
     # check resume training
     if os.path.exists(os.path.join(log_dir, 'latest_checkpoint.pt')):
         checkpoint = torch.load(
@@ -741,10 +823,13 @@ def train_val_test():
         model_wrapper.load_state_dict(checkpoint['model'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         last_epoch = checkpoint['last_epoch']
+        print("\n\nFLAGS.lr_scheduler:", FLAGS.lr_scheduler, "\n\n")
         if FLAGS.lr_scheduler in ['exp_decaying_iter', 'cos_annealing_iter', 'multistep_iter']:
+            print("\n\nGoes in if\n\n")
             lr_scheduler = get_lr_scheduler(optimizer, len(train_loader))
             lr_scheduler.last_epoch = last_epoch * len(train_loader)
         else:
+            print("\n\nGoes in else\n\n")
             lr_scheduler = get_lr_scheduler(optimizer)
             lr_scheduler.last_epoch = last_epoch
         best_val = checkpoint['best_val']
@@ -760,13 +845,26 @@ def train_val_test():
         best_val = 1.
         train_meters = get_meters('train')
         val_meters = get_meters('val')
+
         # if start from scratch, print model and do profiling
         mprint(model_wrapper)
+        
+        # does not go into this code block
         if getattr(FLAGS, 'profiling', False):
             if 'gpu' in FLAGS.profiling:
                 profiling(model, use_cuda=True)
             if 'cpu' in FLAGS.profiling:
                 profiling(model, use_cuda=False)
+
+    # printing train and val meters 
+    print("\n\ntrain_meters: {}\n\n".format(train_meters))
+    print("\n\nval_meters: {}\n\n".format(val_meters))
+
+    print("\n\ntrain_meters length: {}\n\n".format(len(train_meters)))
+    print("\n\nval_meters length: {}\n\n".format(len(val_meters)))
+
+    # mprint("model_wrapper from mprint:", model_wrapper) # same as model_wrapper from above, reprinting just as sanity check
+
 
     if getattr(FLAGS, 'log_dir', None):
         try:
@@ -776,10 +874,14 @@ def train_val_test():
 
     mprint('Start training.')
 
+    # HERE RN 
     for epoch in range(last_epoch+1, FLAGS.num_epochs):
+        print("\n\n GOES IN HERE GENERAL CARTMAN LEE\n\n")
         if FLAGS.lr_scheduler in ['exp_decaying_iter', 'cos_annealing_iter', 'multistep_iter']:
+            print("\n\ncheck if it comes into lr_sched = lr_scheduler if block\n\n")
             lr_sched = lr_scheduler
-        else:
+        else: # our cifar-10 uses multistep, so it has no lr_sched according to this conditional block
+            print("\n\nConfirming that it comes into lr_sched = None else block\n\n")
             lr_sched = None
             # For PyTorch 1.1+, comment the following line
             #lr_scheduler.step()
@@ -820,9 +922,11 @@ def train_val_test():
 
         # For PyTorch 1.0 or earlier, comment the following two lines
         if FLAGS.lr_scheduler not in ['exp_decaying_iter', 'cos_annealing_iter', 'multistep_iter']:
+            print("\n\nGoes in lr_scheduler.step() if statement for our CIFAR-10 case\n\n")
             lr_scheduler.step()
 
     if is_master():
+        print("\n\nGoes in profiling if statement is_master() at the end of train_val_test() for our CIFAR-10 case\n\n")
         profiling(model, use_cuda=True)
 
     return
